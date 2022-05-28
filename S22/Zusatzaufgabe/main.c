@@ -1,15 +1,13 @@
 #include <stdio.h>
 
-extern double regula_falsi(double(* fn)(double), double a, double b, unsigned n);
+extern void unionfind(uint64_t setSize, char * instruction_string, char * solution_string);
 
-double fn(double x){
-	return x - 5;
-}
+
 int main (int argc, char** argv){
-	double a = -2.0;
-	double b = 6.0;
-	unsigned n = 15;
-	double result = regula_falsi(fn, a, b, n);
-	printf("the result is %4.10lf \n", result);
+ 	char instruction_string [] = "F0F1F2";
+ 	char solution_string [100];
+ 	unionfind(3, instruction_string, solution_string);
+ 	printf("instructions: %s\n", instruction_string);
+ 	printf("result      : %s\n", solution_string);
 }
 
