@@ -456,4 +456,85 @@ end_evil:
     ret
 	
 ######################################################################## 6.Week ####################################################################
-												----------------------------- Circ -------------------------------
+												----------------------------- SAXPY -------------------------------
+saxpy:
+	// (n: rdi), (alpha: xmm0), (x: rsi), (y: rdx)
+	push rdi
+	push rsi
+	push rdx
+
+	//step1: copy the float alpha in every block of xmm0
+	shufps xmm0, xmm0, 0x00
+Loop1:
+	cmp rdi, 4
+	jl less_than_4
+	movups xmm1, [rsi]
+	movups xmm2, [rdx]
+	mulps xmm1, xmm0
+	addps xmm2, xmm1
+	movups [rdx], xmm2
+
+	movups xmm2, [rdx]
+
+	add rsi, 16
+	add rdx, 16
+	sub rdi, 4
+	jmp Loop1
+less_than_4:
+	cmp rdi, 0
+	je end
+	movss xmm1, [rsi]
+	movss xmm2, [rdx]
+	mulss xmm1, xmm0
+	addss xmm2, xmm1
+	movss [rdx], xmm2
+	add rsi, 4
+	add rdx, 4
+	dec rdi
+	jmp less_than_4
+
+end:
+	pop rdx
+	pop rsi
+	pop rdi
+    ret
+	
+												----------------------------- SDOT -------------------------------
+												
+#include <stddef.h>
+#include <immintrin.h>
+
+float sdot(size_t n, const float x[n], const float y[n]) {
+  	__m128 sum = _mm_setzero_ps();
+	__m128 vx;
+	__m128 vy;
+	size_t modulo = n%4;
+	size_t n_modulo = n - modulo;
+	size_t i;
+	for(i = 0; i< n_modulo; i+= 4){
+		vx = _mm_loadu_ps(x+i);
+		vy = _mm_loadu_ps(y+i);
+		vy = _mm_mul_ps(vx, vy);
+		sum = _mm_add_ps(sum, vy);
+	}
+	if(modulo != 0){
+		while(i<n){
+			vx = _mm_load_ss(x+i);
+			vy = _mm_load_ss(y+i);
+			vy = _mm_mul_ss(vx, vy);
+			sum = _mm_add_ss(sum, vy);
+			i++;
+		}
+	}
+	vy = _mm_shuffle_ps(sum, vx, _MM_SHUFFLE(0,0,0,0));
+	vx = _mm_shuffle_ps(sum, vx, _MM_SHUFFLE(0,0,0,1));
+	vy = _mm_add_ss(vy, vx);
+	vx = _mm_shuffle_ps(sum, vx, _MM_SHUFFLE(0,0,0,2));
+	vy = _mm_add_ss(vy, vx);
+	vx = _mm_shuffle_ps(sum, vx, _MM_SHUFFLE(0,0,0,3));
+	vy = _mm_add_ss(vy, vx);
+    return vy[0];
+}
+
+######################################################################## 6.Week ####################################################################
+												----------------------------- SAXPY -------------------------------
