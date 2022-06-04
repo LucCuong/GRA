@@ -1,8 +1,13 @@
-# Add additional compiler flags here
-CFLAGS=-O0 -g
+CFLAGS = -O0 -Wall -Wextra -Wpedantic -g
 
-all: main
-main: main.c find_union.S
+.phony:
+all: clean run
+
+run: main
+	./$^
+
+main: main.c unionfind.S help_methods.S
 	$(CC) $(CFLAGS) -o $@ $^
+
 clean:
-	rm -f main
+	$(RM) main
