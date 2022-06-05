@@ -21,33 +21,33 @@ unionfind:
     push r15                                                                                        // r15: solution_string
     push rbp
     mov rbp, rsp
-    sub rsp, 64
+    sub rsp, 72
 	
     // store paramters in callee-registers
     mov rbx, rdi
     mov r14, rsi
     mov r15, rdx
     mov [rbp - 64], r15
-    movups xmm0, [r14]
-    movups xmm1, [r15]
+    //movups xmm0, [r14]
+    //movups xmm1, [r15]
     
     
     // calculate memory space and allocate the memory => returned address in rax
     mov rax, 8
     mul rbx
-    push rax                                                                                        // store size of array on the stack 
+    mov [rbp - 72], rax                                                                                        // store size of array on the stack 
     mov rdi, rax
     call malloc
     mov r12, rax
-    movups xmm2, [r12]
-    movups xmm4, [r12 + 16]
+    //movups xmm2, [r12]
+    //movups xmm4, [r12 + 16]
 	
     // allocate for the second array
-    pop rdi                                                                                         // get array size from the stack
+    mov rdi, [rbp - 72]                                                                                         // get array size from the stack
     call malloc                         
     mov r13, rax
-    movups xmm3, [r13]
-    movups xmm5, [r13 + 16]
+    //movups xmm3, [r13]
+    //movups xmm5, [r13 + 16]
 	
     // set up two array for initial values
     mov rcx, 0
@@ -57,13 +57,13 @@ unionfind:
     
     // store index in array 1
     mov [r12 + rcx*8], rcx
-    movups xmm2, [r12]
-    movups xmm4, [r12 + 16]
+    //movups xmm2, [r12]
+    //movups xmm4, [r12 + 16]
     
     // store size in array 2
     mov qword ptr [r13 + rcx*8], 1
-    movups xmm3, [r13]
-    movups xmm5, [r13 + 16]
+    //movups xmm3, [r13]
+    //movups xmm5, [r13 + 16]
     
     inc rcx
     jmp .Lsetup_loop
@@ -90,8 +90,7 @@ unionfind:
     mov r14, rdi                                                                                    // Update the current pointer in instruction_string
     mov [rbp - 32], rax                                                                             // Store the INDEX for the FIND function in stack
     call find
-    call print_solution
-    jmp .Lprocessing_data_loop
+    jmp .Lprint_F
     
 find:
     mov r9, 0                                                                                       // r9 stores levels
@@ -116,8 +115,8 @@ find:
     mov [rbp - 16], r9                                                                              // update levels on stack
     mov [r12 + rdx*8], rdi                                                                          // hang the node at the root
     mov rdx, rcx
-    movups xmm2, [r12]
-    movups xmm4, [r12 + 16]
+    //movups xmm2, [r12]
+    //movups xmm4, [r12 + 16]
     jmp .Lfind_relink_loop
 
 .Lend_find:
@@ -173,10 +172,10 @@ find:
     add rsi, rdi
     mov qword ptr [r13 + rax*8], 0
     mov [r13 + rcx*8], rsi
-    movups xmm3, [r13]
-    movups xmm5, [r13 + 16]
-    movups xmm2, [r12]
-    movups xmm4, [r12 + 16]
+    //movups xmm3, [r13]
+    //movups xmm5, [r13 + 16]
+    //movups xmm2, [r12]
+    //movups xmm4, [r12 + 16]
     jmp .Lend_union
     
 .Lattach2to1:
@@ -189,14 +188,13 @@ find:
     // Update values on stack for printing
     mov [rbp - 8], rax
 
-    movups xmm3, [r13]
-    movups xmm5, [r13 + 16]
-    movups xmm2, [r12]
-    movups xmm4, [r12 + 16]
+    //movups xmm3, [r13]
+    //movups xmm5, [r13 + 16]
+    //movups xmm2, [r12]
+    //movups xmm4, [r12 + 16]
       
 .Lend_union:
-    call print_solution
-    jmp .Lprocessing_data_loop
+    jmp .Lprint_U
     
 print_solution:                                                                                     
     cmp qword ptr [rbp-24], 0
@@ -225,8 +223,8 @@ print_solution:
     mov r15, rax
     
     mov rax, [rbp - 64]                                                                                              
-    movups xmm1, [rax]
-    ret
+    //movups xmm1, [rax]
+    jmp .Lprocessing_data_loop
 end:	
     mov al, 0
     mov byte ptr [r15], al
