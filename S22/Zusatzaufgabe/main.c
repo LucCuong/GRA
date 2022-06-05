@@ -21,6 +21,8 @@ int main (){
 	char* putInt = putint(0, &testPutInt[2]);
 	printf("\nThe original string before putint: %s ---\n",testPutInt);
 	printf("The string after using putint: %s ---\n",putInt);
+
+	
 	
 	char instruction_string [] = "F0F1F2";
 	char solution_string[100];
@@ -72,5 +74,13 @@ int main (){
  	}else{
  		printf("failed, the solution should be F1337L0\n");
  	}
+ 	
+ 	char instruction_string5 [] =  "F0";
+  	char solution_string5[100];
+ 	printf("\n");
+ 	unionfind(1, instruction_string5, solution_string5);
+ 	printf("instructions: %s\n", instruction_string5);
+ 	printf("result      : %s\n", solution_string5);
+
 }
 

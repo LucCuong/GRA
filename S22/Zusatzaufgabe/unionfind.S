@@ -153,7 +153,7 @@ find:
     mov rax, [rbp - 56]
     mov rcx, [rbp - 16]
     add rax, rcx
-    add [rbp - 16], rax
+    mov [rbp - 16], rax
     
     // Compare two roots
     mov rax, [rbp - 48]
@@ -175,6 +175,8 @@ find:
     mov [r13 + rcx*8], rsi
     movups xmm3, [r13]
     movups xmm5, [r13 + 16]
+    movups xmm2, [r12]
+    movups xmm4, [r12 + 16]
     jmp .Lend_union
     
 .Lattach2to1:
