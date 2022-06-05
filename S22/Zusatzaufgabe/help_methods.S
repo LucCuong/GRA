@@ -19,7 +19,7 @@ getint:
     
     sub cl, 48                                                  // 48 = '0'
     cmp cl, 9
-    jg .Lend_getint
+    ja .Lend_getint
     
     mul rsi
     add rax, rcx
@@ -40,14 +40,42 @@ getint:
     
     //char * putint ( uint64_t value , char * string ) => rdi: value, rsi: *string
 putint:
-    mov rax, rdi
-    mov rcx, 10
+    //count the number of digits
+    mov rax, rdi                                                                                // rdi stores value
+    mov rcx, 10                                                                                 // rcx stores divisor
+    mov r8, 1
+    movups xmm0, [rsi]
+.Lputint_count_loop:
+    mov rdx, 0
     div rcx
+    cmp rax, 0
+    je .Lputint_prepare
+    
+    inc r8                                                                                      // r8 stores the current number of digits
+    jmp .Lputint_count_loop
+
+.Lputint_prepare:
+    mov r11, r8                                                                                 // r11 stores index of the  pointer after using  putint
+    dec r8
+    mov rax, rdi
 .Lputint_loop:
+    movups xmm1, [rsi]
+    mov rdx, 0
+    div rcx                                                         
+    add rdx, 48
+    mov [rsi + r8], dl                                                                          // rdx stores the digit
+    dec r8
+    cmp r8, 0
+    jl .Lend_putint
+    jmp .Lputint_loop
     
     
+        
+                
 .Lend_putint:
     // Testing calling convention
+    add rsi, r11
+    mov rax, rsi
     mov rcx, -1
     mov rdx, -1
     mov r8, -1

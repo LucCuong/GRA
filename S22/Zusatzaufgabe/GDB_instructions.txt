@@ -1,3 +1,7 @@
 layout next/prev: open  view in C/Assembly code
 
-break filename:line: set break point in another file 
+break filename:line: set break point in another file
+
+ctrl + x + a: close the layout view
+
+p $xmm0.v16_int8 to print 16 elements of xmm0 
