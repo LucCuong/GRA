@@ -537,8 +537,87 @@ float sdot(size_t n, const float x[n], const float y[n]) {
 }
 
 ######################################################################## 7.Week ####################################################################
-												----------------------------- SAXPY -------------------------------
-											
+												----------------------------- TOUPPER_SIMD -------------------------------
+.intel_syntax noprefix
+.global toupper_simd
+
+.section .rodata
+.align 16
+.Lend_upper:      .byte 0x7b,0x7b,0x7b,0x7b,0x7b,0x7b,0x7b,0x7b,0x7b,0x7b,0x7b,0x7b,0x7b,0x7b,0x7b,0x7b	//123
+.Lbegin_lower:    .byte 0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60	//96
+.Ldiff:           .byte 0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20	//32
+.Llow:			  .byte 0xe1,0xe1,0xe1,0xe1,0xe1,0xe1,0xe1,0xe1,0xe1,0xe1,0xe1,0xe1,0xe1,0xe1,0xe1,0xe1 //225
+.Lhigh:			  .byte 0x99,0x99,0x99,0x99,0x99,0x99,0x99,0x99,0x99,0x99,0x99,0x99,0x99,0x99,0x99,0x99 //-101
+.section .text
+
+toupper_simd:
+    //jmp toupper_asm
+    //pointer: rdi
+
+	movdqa xmm13, [rip + .Ldiff]
+	movdqa xmm10, [rip + .Llow]
+	movdqa xmm9,  [rip + .Lhigh]
+
+    mov rax, rdi					//address of string
+    and rax, 0xf					// p mod 16
+    mov rcx, 16
+    sub rcx, rax					//number of byte til the alignment
+    cmp rcx, 16						//already aligned?
+    je .Lloop2
+
+.Lloop1:
+	mov al,[rdi]
+    cmp al,0                    	// Branch to return if char is '\0'
+    je .Lend
+    sub al,'a'                  	// Make 'a' => 0, 'b' => 1, ..., 'z' => 25.
+    cmp al,25                   	// Branch to cont if al is unsigned > 25.
+    ja .Lcont2                   	// "Jump above", unsigned equivalent to jg
+    sub byte ptr [rdi],0x20     	// Transform letter to upper case
+.Lcont2:
+    inc rdi
+    dec rcx
+    jnz .Lloop1
+
+.Lloop2:
+	pxor xmm1, xmm1						//compare 16 byte with 0 block by block
+	pcmpeqb xmm1, [rdi]
+
+
+	movq rax, xmm1
+	movhlps xmm1,xmm1
+	movq rcx, xmm1
+	cmp rax, rcx
+	jne toupper_asm
+
+
+	//compare with 'a' and 'z'
+	movdqa xmm1, [rdi]
+	psubb xmm1, xmm10
+	pcmpgtb xmm1, [rip + .Lhigh]
+	andnpd xmm1, [rip + .Ldiff]
+
+	movdqa xmm0, [rdi]
+	psubb xmm0, xmm1
+	movdqa [rdi], xmm0
+
+
+	add rdi, 16
+	jmp .Lloop2
+
+
+toupper_asm:
+    mov al,[rdi]
+    cmp al,0                    // Branch to return if char is '\0'
+    je .Lend
+    sub al,'a'                  // Make 'a' => 0, 'b' => 1, ..., 'z' => 25.
+    cmp al,25                   // Branch to cont if al is unsigned > 25.
+    ja .Lcont                   // "Jump above", unsigned equivalent to jg
+    sub byte ptr [rdi],0x20     // Transform letter to upper case
+.Lcont:
+    inc rdi
+    jmp toupper_asm
+.Lend:
+    ret											
 												
 ######################################################################## Zusatzaufgabe ####################################################################
 .intel_syntax noprefix
