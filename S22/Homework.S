@@ -2,6 +2,7 @@
 ######################################################################## 1.Week ####################################################################
 											------------------------------ factorial ----------------------------------
 factorial:
+# Solution from previous semester
 	# prepare register
 	push rbx
 	mov rax, 1
@@ -50,6 +51,7 @@ factorial:
 	
 												------------------------------ mul8 ----------------------------------
 mult_eight:
+# Solution from previous semester
   shl rdi, 3
   mov rax, rdi
   ret
@@ -57,6 +59,7 @@ mult_eight:
 												------------------------------ gauss ----------------------------------
   
 gauss:
+# Solution from previous semester
   lea rax, [rdi + 1]
   mul rdi
   shl rdx, 63
@@ -87,6 +90,7 @@ uint64_t collatz(uint64_t n) {
 												----------------------------- EAN 13 --------------------------------
 #include <stdint.h>
 int ean13(uint64_t ean) {
+# Solution from previous semester
   if(ean > 9999999999999)
     return 0;
   int ziffer;
@@ -116,6 +120,7 @@ struct BFState {
 };
 
 int brainfuck(struct BFState* state, const char* program) {
+# Solution from previous semester
     // TODO: your implementation. :)
 
     // Prevent warnings about unused parameters.
@@ -183,6 +188,7 @@ int brainfuck(struct BFState* state, const char* program) {
 #include <stddef.h>
 struct node { struct node* next; unsigned long val; };
 uint64_t listsum(const struct node* list) {
+# Solution from previous semester
   // TODO: your implementation. :)
   uint64_t sum  = 0;
   while(list != NULL){
@@ -195,6 +201,7 @@ uint64_t listsum(const struct node* list) {
 ######################################################################## 4.Week ####################################################################
 												----------------------------- Map --------------------------------			
 map:
+# Solution from previous semester
 	push r12
     push r13
     push r14
@@ -245,6 +252,7 @@ void* memccpy(void* dest, const void* src, int c, size_t n) {
 
 .section .text
 circ:
+# Solution from previous semester
   movsd xmm1, [rip + .Pi]
   mulsd xmm0, xmm1
   ret
@@ -261,6 +269,7 @@ enum RoundMode {
 // Iff  isflt==false  then  fix  is valid; otherwise  flt  is valid.
 struct num { bool isflt; union { int64_t fix; double flt; }; };
 struct num num_round(struct num num, enum RoundMode rm) {
+# Solution from previous semester
   // TODO: round  num  according to  rm.
   int64_t after_comma;
   int64_t exponent;
@@ -362,6 +371,7 @@ struct num num_round(struct num num, enum RoundMode rm) {
 }
 												----------------------------- Numquad --------------------------------
 numquad: // double numquad(double(* f)(double), double a, double b, size_t n)
+# Solution from previous semester
     //(a:xmm0)(b:xmm1)(size:rsi)(pointer: rdi)
     //pxor xmm0, xmm0
     push rdi
@@ -458,6 +468,7 @@ end_evil:
 ######################################################################## 6.Week ####################################################################
 												----------------------------- SAXPY -------------------------------
 saxpy:
+# Solution from previous semester
 	// (n: rdi), (alpha: xmm0), (x: rsi), (y: rdx)
 	push rdi
 	push rsi
@@ -505,6 +516,7 @@ end:
 #include <immintrin.h>
 
 float sdot(size_t n, const float x[n], const float y[n]) {
+# Solution from previous semester
   	__m128 sum = _mm_setzero_ps();
 	__m128 vx;
 	__m128 vy;
@@ -551,6 +563,7 @@ float sdot(size_t n, const float x[n], const float y[n]) {
 .section .text
 
 toupper_simd:
+# Solution from previous semester
     //jmp toupper_asm
     //pointer: rdi
 
@@ -635,6 +648,7 @@ toupper_asm:
 // solution_string: rdx
 
 unionfind:
+# Solution from previous semester
     // save callee-register
     push rbx                                                                                        // rbx: setSize										
     push r12										  // r12: pointer to first element of group index
